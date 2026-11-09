@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+/* Velora : prune profond (bandes sombres) + rose poudré (accent) sur fond blush. */
+@theme {
+  --color-ink: #1d1418;
+  --color-plum: #2a1d22;
+  --color-plum-2: #3a2a30;
+  --color-rose: #e46a8a;
+  --color-rose-deep: #c94f70;
+  --color-rose-soft: #f7d6de;
+  --color-blush: #fbf2f3;
+  --color-cream: #fffafa;
+  --color-muted: #7c6a70;
+  --color-line: #efdfe3;
+  --color-ok: #2f9e6b;
+  --font-display: var(--font-display-fr), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-body-fr), "Jost", system-ui, sans-serif;
+}
+
+html[lang="ar"] {
+  --font-display: var(--font-display-ar), "El Messiri", "Noto Naskh Arabic", serif;
+  --font-sans: var(--font-body-ar), "Tajawal", "Noto Sans Arabic", system-ui, sans-serif;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-blush);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-rose);
+  outline-offset: 2px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.7rem 1.4rem;
+  font-weight: 500;
+  transition: background 0.2s, transform 0.2s, color 0.2s;
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn-rose {
+  background: var(--color-rose);
+  color: #fff;
+}
+.btn-rose:hover {
+  background: var(--color-rose-deep);
+}
+.btn-ghost {
+  border: 1px solid currentColor;
+}
+
+.field {
+  width: 100%;
+  border: 1px solid var(--color-line);
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--color-rose);
+  box-shadow: 0 0 0 3px var(--color-rose-soft);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
