@@ -1,18 +1,19 @@
 @import "tailwindcss";
 
-/* Velora : prune profond (bandes sombres) + rose poudré (accent) sur fond blush. */
+/* Velora : aubergine profond, ivoire chaud, rose et filets champagne. Photos en avant, angles nets. */
 @theme {
-  --color-ink: #1d1418;
-  --color-plum: #2a1d22;
-  --color-plum-2: #3a2a30;
-  --color-rose: #e46a8a;
-  --color-rose-deep: #c94f70;
-  --color-rose-soft: #f7d6de;
-  --color-blush: #fbf2f3;
-  --color-cream: #fffafa;
-  --color-muted: #7c6a70;
-  --color-line: #efdfe3;
-  --color-ok: #2f9e6b;
+  --color-ink: #1a1014;
+  --color-plum: #24161c;
+  --color-plum-2: #3a2530;
+  --color-rose: #d9577c;
+  --color-rose-deep: #b8405f;
+  --color-rose-soft: #f3d3db;
+  --color-blush: #f7f0ea;
+  --color-cream: #fffaf6;
+  --color-gold: #b89466;
+  --color-muted: #77676c;
+  --color-line: #e6d9d2;
+  --color-ok: #2f8f63;
   --font-display: var(--font-display-fr), "Cormorant Garamond", Georgia, serif;
   --font-sans: var(--font-body-fr), "Jost", system-ui, sans-serif;
 }
@@ -27,7 +28,11 @@ html {
 }
 
 body {
-  background: var(--color-blush);
+  background:
+    radial-gradient(60rem 40rem at 100% 0%, rgb(217 87 124 / 0.07), transparent 60%),
+    radial-gradient(50rem 36rem at 0% 45%, rgb(184 148 102 / 0.09), transparent 60%),
+    var(--color-blush);
+  background-attachment: fixed;
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -57,9 +62,11 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 999px;
-  padding: 0.7rem 1.4rem;
+  border-radius: 2px;
+  padding: 0.8rem 1.6rem;
   font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
   transition: background 0.2s, transform 0.2s, color 0.2s;
 }
 .btn:active {
@@ -80,13 +87,52 @@ h3 {
   width: 100%;
   border: 1px solid var(--color-line);
   background: #fff;
-  border-radius: 12px;
+  border-radius: 3px;
   padding: 0.7rem 0.9rem;
 }
 .field:focus {
   outline: none;
   border-color: var(--color-rose);
   box-shadow: 0 0 0 3px var(--color-rose-soft);
+}
+
+.btn-dark {
+  background: var(--color-ink);
+  color: var(--color-cream);
+}
+.btn-dark:hover {
+  background: var(--color-plum-2);
+}
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+html[lang="ar"] .eyebrow,
+html[lang="ar"] .btn {
+  letter-spacing: 0;
+}
+html[lang="ar"] .eyebrow {
+  font-size: 0.85rem;
+}
+.card {
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+}
+.photo {
+  position: relative;
+  overflow: hidden;
+  background: #eadfd8;
+}
+.photo img {
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+a:hover > .photo img,
+.group:hover .photo img {
+  transform: scale(1.04);
 }
 
 .num {

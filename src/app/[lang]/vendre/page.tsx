@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDict, isLocale } from "@/lib/i18n";
 import { ScissorsIcon, StoreIcon } from "@/components/icons";
@@ -20,7 +21,6 @@ const copy = {
       "Ajoutez vos prestations avec leur prix et leur durée.",
       "Acceptez ou refusez les demandes de rendez-vous depuis votre tableau de bord.",
     ],
-    soon: "L'inscription ouvre à la prochaine étape du projet.",
   },
   ar: {
     title: "بيعي واستقبلي المواعيد على Velora",
@@ -38,7 +38,6 @@ const copy = {
       "أضيفي خدماتك مع السعر والمدة.",
       "اقبلي أو ارفضي طلبات المواعيد من لوحة التحكم.",
     ],
-    soon: "التسجيل يُفتح في المرحلة القادمة من المشروع.",
   },
 };
 
@@ -54,12 +53,12 @@ export default async function Sell({ params }: { params: Promise<{ lang: string 
   const t = getDict(lang);
   const c = copy[lang];
   const blocks = [
-    { id: "boutique", title: c.seller, steps: c.sellerSteps, Icon: StoreIcon, cta: t.sellCta },
-    { id: "salon", title: c.salon, steps: c.salonSteps, Icon: ScissorsIcon, cta: t.salonSpace },
+    { id: "boutique", title: c.seller, steps: c.sellerSteps, Icon: StoreIcon, cta: t.registerShop },
+    { id: "salon", title: c.salon, steps: c.salonSteps, Icon: ScissorsIcon, cta: t.registerSalon },
   ];
   return (
     <>
-      <section className="bg-plum text-cream">
+      <section className="bg-ink text-cream">
         <div className="wrap py-12 space-y-3">
           <h1 className="font-display text-4xl md:text-6xl max-w-3xl">{c.title}</h1>
           <p className="text-cream/70 max-w-xl">{c.intro}</p>
@@ -67,7 +66,7 @@ export default async function Sell({ params }: { params: Promise<{ lang: string 
       </section>
       <div className="wrap py-10 grid md:grid-cols-2 gap-5">
         {blocks.map(({ id, title, steps, Icon, cta }) => (
-          <section id={id} key={id} className="bg-white rounded-2xl border border-line p-6 flex flex-col gap-5 scroll-mt-24">
+          <section id={id} key={id} className="card p-6 flex flex-col gap-5 scroll-mt-24">
             <h2 className="font-display text-3xl flex items-center gap-3">
               <Icon className="w-8 h-8 text-rose" /> {title}
             </h2>
@@ -81,10 +80,9 @@ export default async function Sell({ params }: { params: Promise<{ lang: string 
                 </li>
               ))}
             </ol>
-            <div className="mt-auto space-y-2">
-              <button disabled className="btn btn-rose w-full opacity-50 cursor-not-allowed">{cta}</button>
-              <p className="text-xs text-muted text-center">{c.soon}</p>
-            </div>
+            <Link href={`/${lang}/inscription/${id}`} className="btn btn-rose mt-auto">
+              {cta}
+            </Link>
           </section>
         ))}
       </div>

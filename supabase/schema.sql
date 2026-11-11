@@ -6,6 +6,18 @@ create type order_status as enum ('new', 'confirmed', 'shipped', 'delivered', 'c
 create type booking_status as enum ('pending', 'accepted', 'refused', 'done', 'no_show', 'cancelled');
 create type salon_type as enum ('women', 'men', 'mixed');
 
+-- Boîte de réception : commandes, rendez-vous et demandes d'inscription envoyés par le site.
+-- Écrite uniquement par le serveur (service role) ; aucune lecture publique.
+create table submissions (
+  id bigint generated always as identity primary key,
+  kind text not null check (kind in ('order', 'booking', 'shop', 'salon')),
+  phone text not null,
+  payload jsonb not null,
+  handled boolean not null default false,
+  created_at timestamptz not null default now()
+);
+alter table submissions enable row level security;
+
 -- Profils (1 par compte Supabase Auth)
 create table profiles (
   id uuid primary key references auth.users on delete cascade,

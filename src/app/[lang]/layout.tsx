@@ -8,6 +8,7 @@ import { CartProvider } from "@/components/CartProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
+import { backendReady } from "@/lib/backend";
 
 const displayFr = Cormorant_Garamond({
   subsets: ["latin"],
@@ -55,7 +56,7 @@ export default async function LangLayout({
     >
       <body className="min-h-screen flex flex-col pb-[calc(64px+env(safe-area-inset-bottom,0px))] md:pb-0">
         <CartProvider>
-          <Header lang={lang} />
+          <Header lang={lang} demo={!backendReady} />
           <main className="flex-1">{children}</main>
           <Footer lang={lang} />
           <BottomNav lang={lang} />

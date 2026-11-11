@@ -28,8 +28,8 @@ export default function Footer({ lang }: { lang: Locale }) {
           <h3 className="text-cream text-sm font-medium mb-3">Velora</h3>
           <ul className="space-y-2 text-sm">
             <li><Link href={`/${lang}/salons`} className="hover:text-rose">{t.salons}</Link></li>
-            <li><Link href={`/${lang}/vendre`} className="hover:text-rose">{t.sellerSpace}</Link></li>
-            <li><Link href={`/${lang}/vendre#salon`} className="hover:text-rose">{t.salonSpace}</Link></li>
+            <li><Link href={`/${lang}/inscription/boutique`} className="hover:text-rose">{t.registerShop}</Link></li>
+            <li><Link href={`/${lang}/inscription/salon`} className="hover:text-rose">{t.registerSalon}</Link></li>
             <li><Link href={`/${lang}/compte`} className="hover:text-rose">{t.accountTitle}</Link></li>
           </ul>
         </div>
@@ -42,7 +42,7 @@ export default function Footer({ lang }: { lang: Locale }) {
       <div className="border-t border-white/10">
         <div className="wrap py-5 text-xs flex flex-wrap gap-2 justify-between">
           <span>© {new Date().getFullYear()} Velora Market. {t.rights}</span>
-          <span>🇩🇿 Algérie · DZD</span>
+          <span>{t.topBar}</span>
         </div>
       </div>
     </footer>

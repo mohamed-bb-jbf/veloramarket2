@@ -19,7 +19,7 @@ export default function BottomNav({ lang }: { lang: Locale }) {
   ];
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-plum text-cream/70 border-t border-white/10 pb-[env(safe-area-inset-bottom,0px)] ps-[env(safe-area-inset-left,0px)] pe-[env(safe-area-inset-right,0px)]"
+      className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-ink text-cream/70 border-t border-white/10 pb-[env(safe-area-inset-bottom,0px)] ps-[env(safe-area-inset-left,0px)] pe-[env(safe-area-inset-right,0px)]"
       aria-label="Navigation"
     >
       <ul className="grid grid-cols-5 h-16">

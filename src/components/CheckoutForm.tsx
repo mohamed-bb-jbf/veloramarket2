@@ -7,6 +7,7 @@ import { wilayas } from "@/lib/wilayas";
 import { useCart } from "./CartProvider";
 import { Totals, useGroupedCart } from "./CartView";
 import { CheckIcon } from "./icons";
+import { submit as send } from "@/lib/submit";
 
 export const PHONE_RE = /^0[567]\d{8}$/;
 export const cleanPhone = (s: string) => s.replace(/[\s.-]/g, "");
@@ -17,10 +18,13 @@ export default function CheckoutForm({ lang }: { lang: Locale }) {
   const { groups, total } = useGroupedCart();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [orderNo, setOrderNo] = useState<string | null>(null);
+  const [demo, setDemo] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   if (orderNo)
     return (
-      <div className="bg-white rounded-2xl border border-line p-10 text-center space-y-4 max-w-lg mx-auto">
+      <div className="card p-10 text-center space-y-4 max-w-lg mx-auto">
         <span className="w-14 h-14 rounded-full bg-ok/10 text-ok grid place-items-center mx-auto">
           <CheckIcon className="w-7 h-7" />
         </span>
@@ -28,19 +32,20 @@ export default function CheckoutForm({ lang }: { lang: Locale }) {
         <p className="text-muted">
           {t.orderSentText} <strong className="text-ink num">{orderNo}</strong>
         </p>
+        {demo && <p className="text-xs bg-rose-soft px-3 py-2">{t.demoSaved}</p>}
         <Link href={`/${lang}`} className="btn btn-rose">{t.continueShopping}</Link>
       </div>
     );
 
   if (!items.length)
     return (
-      <div className="bg-white rounded-2xl border border-line p-10 text-center space-y-4">
+      <div className="card p-10 text-center space-y-4">
         <p className="text-muted">{t.emptyCart}</p>
         <Link href={`/${lang}/categories`} className="btn btn-rose">{t.continueShopping}</Link>
       </div>
     );
 
-  function submit(e: React.FormEvent<HTMLFormElement>) {
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
     const err: Record<string, string> = {};
@@ -50,14 +55,22 @@ export default function CheckoutForm({ lang }: { lang: Locale }) {
     if (Object.keys(err).length) return;
 
     const no = "VM-" + Date.now().toString(36).toUpperCase().slice(-6);
-    // Phase 1 : enregistrement local. Phase 3 : insertion dans Supabase (tables orders / order_items).
-    try {
-      const prev = JSON.parse(localStorage.getItem("velora-orders") || "[]");
-      localStorage.setItem(
-        "velora-orders",
-        JSON.stringify([...prev, { no, date: new Date().toISOString(), customer: f, items, total }]),
-      );
-    } catch {}
+    setBusy(true);
+    setFailed(false);
+    const res = await send("order", {
+      no,
+      ...f,
+      total,
+      shops: groups.map((g) => ({
+        shop: g.shop.name,
+        subtotal: g.sub,
+        delivery: g.fee,
+        items: g.lines.map((l) => ({ id: l.p.id, name: l.p.name.fr, shade: l.shade, qty: l.qty, price: l.p.price })),
+      })),
+    });
+    setBusy(false);
+    if (!res.ok) return setFailed(true);
+    setDemo(res.demo);
     clear();
     setOrderNo(no);
     window.scrollTo({ top: 0 });
@@ -68,7 +81,7 @@ export default function CheckoutForm({ lang }: { lang: Locale }) {
 
   return (
     <form onSubmit={submit} noValidate className="grid lg:grid-cols-[1fr_340px] gap-6 items-start">
-      <div className="bg-white rounded-2xl border border-line p-5 grid sm:grid-cols-2 gap-4">
+      <div className="card p-5 grid sm:grid-cols-2 gap-4">
         <label className="sm:col-span-2 text-sm space-y-1.5">
           <span>{t.fullName}</span>
           <input id="co-name" name="name" autoComplete="name" className="field" />
@@ -107,13 +120,14 @@ export default function CheckoutForm({ lang }: { lang: Locale }) {
         </label>
       </div>
 
-      <aside className="bg-white rounded-2xl border border-line p-5 space-y-5 lg:sticky lg:top-24">
+      <aside className="card p-5 space-y-5 lg:sticky lg:top-24">
         <p className="text-sm text-muted num">
           {items.reduce((n, i) => n + i.qty, 0)} × · {groups.length} {t.fromShops}
         </p>
         <Totals lang={lang} />
-        <p className="text-xs bg-blush rounded-xl p-3">{t.codNotice}</p>
-        <button className="btn btn-rose w-full">{t.confirmOrder}</button>
+        <p className="text-xs bg-blush rounded-[3px] p-3">{t.codNotice}</p>
+        {failed && <p className="text-xs text-rose-deep" role="alert">{t.sendError}</p>}
+        <button disabled={busy} className="btn btn-rose w-full disabled:opacity-60">{busy ? t.sending : t.confirmOrder}</button>
       </aside>
     </form>
   );

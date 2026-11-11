@@ -18,7 +18,7 @@ export default async function Categories({ params }: { params: Promise<{ lang: s
       <h1 className="font-display text-4xl md:text-5xl mb-6">{t.categories}</h1>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {categories.map((c) => (
-          <CategoryTile key={c.slug} c={c} lang={lang} count={products.filter((p) => p.category === c.slug).length} />
+          <CategoryTile key={c.slug} c={c} lang={lang} className="aspect-[4/3]" count={products.filter((p) => p.category === c.slug).length} />
         ))}
       </div>
     </div>

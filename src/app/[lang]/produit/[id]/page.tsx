@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDict, isLocale, locales } from "@/lib/i18n";
@@ -6,7 +7,6 @@ import { getCategory, getProduct, getShop, products } from "@/lib/data";
 import { price } from "@/lib/format";
 import { wilayaName } from "@/lib/wilayas";
 import { SITE_URL } from "@/lib/site";
-import ProductVisual from "@/components/ProductVisual";
 import AddToCart from "@/components/AddToCart";
 import { ProductCard, Rating } from "@/components/cards";
 import { BadgeIcon, CashIcon, PinIcon, ShieldIcon, TruckIcon } from "@/components/icons";
@@ -22,7 +22,8 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
   const p = getProduct(id);
   if (!isLocale(lang) || !p) return {};
   return {
-    title: `${p.brand} ${p.name}`,
+    title: `${p.brand} ${p.name[lang]}`,
+    openGraph: { images: [p.img] },
     description: p.desc[lang],
     alternates: { canonical: `/${lang}/produit/${id}` },
   };
@@ -40,7 +41,8 @@ export default async function ProductPage({ params }: P) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: `${p.brand} ${p.name}`,
+    name: `${p.brand} ${p.name[lang]}`,
+    image: `${SITE_URL}${p.img}`,
     brand: { "@type": "Brand", name: p.brand },
     description: p.desc[lang],
     aggregateRating: { "@type": "AggregateRating", ratingValue: p.rating, reviewCount: p.reviews },
@@ -67,14 +69,14 @@ export default async function ProductPage({ params }: P) {
       </nav>
 
       <div className="grid md:grid-cols-2 gap-8 lg:gap-14">
-        <div className="relative rounded-[2rem] aspect-square" style={{ background: p.bg }}>
-          <ProductVisual visual={p.visual} tint={p.tint} className="absolute inset-[14%] w-[72%] h-[72%]" />
+        <div className="photo aspect-[4/5] rounded-[4px]">
+          <Image src={p.img} alt={p.name[lang]} fill priority sizes="(min-width: 768px) 50vw, 100vw" />
         </div>
 
         <div className="space-y-5 min-w-0">
           <div className="space-y-2">
-            <p className="text-sm uppercase tracking-wider text-muted">{p.brand}</p>
-            <h1 className="font-display text-4xl md:text-5xl leading-tight" dir="auto">{p.name}</h1>
+            <p className="eyebrow" dir="ltr">{p.brand}</p>
+            <h1 className="font-display text-4xl md:text-5xl leading-tight">{p.name[lang]}</h1>
             <Rating value={p.rating} count={p.reviews} lang={lang} />
           </div>
 
@@ -82,7 +84,7 @@ export default async function ProductPage({ params }: P) {
             <span className="text-3xl font-semibold text-plum num">{price(p.price, lang)}</span>
             {p.oldPrice && <span className="text-muted line-through num">{price(p.oldPrice, lang)}</span>}
             <span
-              className={`ms-auto text-xs rounded-full px-3 py-1 ${p.stock > 0 ? "bg-ok/10 text-ok" : "bg-rose-soft text-rose-deep"}`}
+              className={`ms-auto text-xs px-3 py-1 ${p.stock > 0 ? "bg-ok/10 text-ok" : "bg-rose-soft text-rose-deep"}`}
             >
               {p.stock > 0 ? t.inStock : t.outOfStock}
             </span>
@@ -100,7 +102,7 @@ export default async function ProductPage({ params }: P) {
 
           <Link
             href={`/${lang}/boutique/${shop.slug}`}
-            className="flex items-center gap-4 bg-white rounded-2xl border border-line p-4 hover:border-rose"
+            className="flex items-center gap-4 card p-4 hover:border-rose"
           >
             <span className="w-12 h-12 rounded-full bg-rose-soft grid place-items-center font-display text-xl text-rose-deep shrink-0">
               {shop.name[0]}
@@ -123,7 +125,7 @@ export default async function ProductPage({ params }: P) {
       {related.length > 0 && (
         <section className="mt-16">
           <h2 className="font-display text-3xl mb-5">{cat?.name[lang]}</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
             {related.map((x) => <ProductCard key={x.id} p={x} lang={lang} />)}
           </div>
         </section>

@@ -5,15 +5,25 @@ Site en français et en arabe (`/fr`, `/ar`), paiement à la livraison, prix en 
 
 ## Avancement
 
-| Phase | Contenu | État |
+| Étape | Contenu | État |
 | --- | --- | --- |
-| 1 | Accueil, catégories, produits, boutiques, recherche, panier, commande, salons et réservation (données de démonstration) | ✅ |
+| 1 | Vitrine : accueil, catégories, produits, boutiques, recherche par wilaya, panier, commande, salons et réservation | ✅ |
+| 1b | Formulaires d'inscription des boutiques et des salons ; réception des commandes, rendez-vous et inscriptions dans Supabase (table `submissions`) | ✅ (à activer, voir ci-dessous) |
 | 2 | Comptes (acheteuse, vendeuse, salon) avec Supabase Auth | ⏳ |
 | 3 | Espace vendeuse : produits, photos, commandes | ⏳ |
 | 4 | Espace salon : prestations, horaires, rendez-vous | ⏳ |
-| 5 | Administration, commissions, mise en ligne et Google Search Console | ⏳ |
+| 5 | Administration, commissions, Google Search Console | ⏳ |
 
-Le schéma de base de données des phases suivantes est prêt dans `supabase/schema.sql`.
+Les boutiques, produits et salons affichés sont des exemples (photos Unsplash, licence libre).
+
+## Activer la réception des demandes
+
+Sans configuration, le site est en mode démonstration : rien n'est enregistré.
+
+1. Créer un projet sur supabase.com, puis exécuter `supabase/schema.sql` dans **SQL Editor**.
+2. Dans Vercel > **Settings → Environment Variables**, ajouter `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`
+   (Supabase > **Project Settings → API**). Ne jamais mettre ces valeurs dans le code.
+3. Redéployer. Les demandes arrivent dans la table `submissions` (Supabase > **Table Editor**).
 
 ## Lancer en local
 

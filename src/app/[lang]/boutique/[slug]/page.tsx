@@ -28,7 +28,7 @@ export default async function ShopPage({ params }: P) {
 
   return (
     <>
-      <section className="bg-plum text-cream">
+      <section className="bg-ink text-cream">
         <div className="wrap py-10 flex flex-wrap items-center gap-6">
           <span className="w-20 h-20 rounded-full bg-rose-soft grid place-items-center font-display text-4xl text-rose-deep shrink-0">
             {s.name[0]}
@@ -47,7 +47,7 @@ export default async function ShopPage({ params }: P) {
             </p>
             <p className="text-cream/80 max-w-xl">{s.bio[lang]}</p>
           </div>
-          <div className="ms-auto bg-white rounded-xl px-4 py-2">
+          <div className="ms-auto bg-cream px-4 py-2">
             <Rating value={s.rating} count={s.reviews} lang={lang} />
           </div>
         </div>
@@ -56,7 +56,7 @@ export default async function ShopPage({ params }: P) {
         <h2 className="font-display text-3xl mb-5">
           {t.products} <span className="text-muted text-xl num">({list.length})</span>
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
           {list.map((p) => <ProductCard key={p.id} p={p} lang={lang} />)}
         </div>
       </div>

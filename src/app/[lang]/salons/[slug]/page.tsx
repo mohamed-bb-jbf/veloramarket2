@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDict, isLocale, locales } from "@/lib/i18n";
@@ -40,17 +41,21 @@ export default async function SalonPage({ params }: P) {
 
   return (
     <>
-      <section className="bg-plum text-cream">
-        <div className="wrap py-10 space-y-3">
-          <Link href={`/${lang}/salons`} className="text-sm text-cream/60 hover:text-rose">← {t.salons}</Link>
+      <section className="relative bg-ink text-cream">
+        <Image src={s.img} alt="" fill priority sizes="100vw" className="object-cover opacity-45" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
+        <div className="wrap relative pt-24 md:pt-40 pb-8 space-y-3">
+          <Link href={`/${lang}/salons`} className="text-sm text-cream/70 hover:text-rose">
+            {lang === "ar" ? "→" : "←"} {t.salons}
+          </Link>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="font-display text-4xl md:text-6xl">{s.name}</h1>
-            <span className="text-xs bg-rose-soft text-plum rounded-full px-3 py-1">{t[s.type]}</span>
+            <h1 className="font-display text-5xl md:text-7xl">{s.name}</h1>
+            <span className="text-xs bg-cream text-ink px-3 py-1">{t[s.type]}</span>
           </div>
-          <p className="text-cream/70 flex items-center gap-1.5">
+          <p className="text-cream/80 flex items-center gap-1.5">
             <PinIcon className="w-4 h-4" /> {s.address} · {wilayaName(s.wilaya, lang)}
           </p>
-          <span className="inline-block bg-white rounded-xl px-3 py-1.5">
+          <span className="inline-block bg-cream px-3 py-1.5">
             <Rating value={s.rating} count={s.reviews} lang={lang} />
           </span>
         </div>
@@ -61,11 +66,20 @@ export default async function SalonPage({ params }: P) {
           <BookingWidget salon={s} lang={lang} />
         </div>
         <aside className="space-y-4">
-          <div className="bg-white rounded-2xl border border-line p-5">
+          {s.gallery.length > 0 && (
+            <div className="grid grid-cols-2 gap-2">
+              {s.gallery.map((g) => (
+                <div key={g} className="photo aspect-square rounded-[4px]">
+                  <Image src={g} alt="" fill sizes="160px" />
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="card p-5">
             <h2 className="font-medium mb-2">{t.about}</h2>
             <p className="text-sm text-muted">{s.bio[lang]}</p>
           </div>
-          <div className="bg-white rounded-2xl border border-line p-5">
+          <div className="card p-5">
             <h2 className="font-medium mb-3">{t.hours}</h2>
             <dl className="text-sm space-y-1.5">
               {order.map((d) => (

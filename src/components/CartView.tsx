@@ -5,7 +5,7 @@ import { getProduct, getShop, type Product } from "@/lib/data";
 import { getDict, type Locale } from "@/lib/i18n";
 import { deliveryFee, FREE_DELIVERY_FROM, price } from "@/lib/format";
 import { useCart, type CartItem } from "./CartProvider";
-import ProductVisual from "./ProductVisual";
+import Image from "next/image";
 import { TrashIcon } from "./icons";
 
 export type Line = CartItem & { p: Product };
@@ -51,7 +51,7 @@ export default function CartView({ lang }: { lang: Locale }) {
 
   if (!groups.length)
     return (
-      <div className="bg-white rounded-2xl border border-line p-10 text-center space-y-4">
+      <div className="card p-10 text-center space-y-4">
         <p className="text-muted">{t.emptyCart}</p>
         <Link href={`/${lang}/categories`} className="btn btn-rose">{t.continueShopping}</Link>
       </div>
@@ -61,7 +61,7 @@ export default function CartView({ lang }: { lang: Locale }) {
     <div className="grid lg:grid-cols-[1fr_340px] gap-6 items-start">
       <div className="space-y-4 min-w-0">
         {groups.map(({ shop, lines, sub, fee }) => (
-          <section key={shop.id} className="bg-white rounded-2xl border border-line">
+          <section key={shop.id} className="card">
             <header className="flex justify-between items-center px-4 py-3 border-b border-line text-sm">
               <Link href={`/${lang}/boutique/${shop.slug}`} className="font-medium hover:text-rose-deep">{shop.name}</Link>
               <span className="text-muted text-xs num">
@@ -71,12 +71,12 @@ export default function CartView({ lang }: { lang: Locale }) {
             <ul className="divide-y divide-line">
               {lines.map((l) => (
                 <li key={l.productId + (l.shade ?? "")} className="flex gap-3 p-4">
-                  <Link href={`/${lang}/produit/${l.p.id}`} className="w-20 h-20 rounded-xl shrink-0 relative" style={{ background: l.p.bg }}>
-                    <ProductVisual visual={l.p.visual} tint={l.p.tint} className="absolute inset-2" />
+                  <Link href={`/${lang}/produit/${l.p.id}`} className="photo w-20 h-24 rounded-[3px] shrink-0">
+                    <Image src={l.p.img} alt="" fill sizes="80px" />
                   </Link>
                   <div className="flex-1 min-w-0 space-y-1">
                     <p className="text-xs text-muted">{l.p.brand}</p>
-                    <p className="text-sm leading-snug" dir="auto">{l.p.name}</p>
+                    <p className="text-sm leading-snug">{l.p.name[lang]}</p>
                     {l.shade && <p className="text-xs text-muted">{t.color} : {l.shade}</p>}
                     <p className="text-rose-deep font-semibold text-sm num">{price(l.p.price, lang)}</p>
                   </div>
@@ -96,7 +96,7 @@ export default function CartView({ lang }: { lang: Locale }) {
           </section>
         ))}
       </div>
-      <aside className="bg-white rounded-2xl border border-line p-5 space-y-5 lg:sticky lg:top-24">
+      <aside className="card p-5 space-y-5 lg:sticky lg:top-24">
         <Totals lang={lang} />
         <Link href={`/${lang}/commande`} className="btn btn-rose w-full">{t.checkout}</Link>
         <p className="text-xs text-muted">{t.codNotice}</p>

@@ -14,13 +14,13 @@ export default async function Account({ params }: { params: Promise<{ lang: stri
   return (
     <div className="wrap py-8 max-w-2xl">
       <h1 className="font-display text-4xl md:text-5xl mb-6">{t.accountTitle}</h1>
-      <div className="bg-white rounded-2xl border border-line p-6 flex items-center gap-4">
+      <div className="card p-6 flex items-center gap-4">
         <span className="w-16 h-16 rounded-full bg-rose-soft grid place-items-center text-rose-deep">
           <UserIcon className="w-8 h-8" />
         </span>
         <p className="text-sm text-muted">{t.accountSoon}</p>
       </div>
-      <ul className="mt-4 bg-white rounded-2xl border border-line divide-y divide-line">
+      <ul className="mt-4 card divide-y divide-line">
         {rows.map((r) => (
           <li key={r} className="px-5 py-4 flex justify-between text-muted">
             {r} <span aria-hidden="true">›</span>

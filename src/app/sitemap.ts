@@ -9,6 +9,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/categories",
     "/salons",
     "/vendre",
+    "/inscription/boutique",
+    "/inscription/salon",
     ...categories.map((c) => `/categorie/${c.slug}`),
     ...products.map((p) => `/produit/${p.id}`),
     ...shops.map((s) => `/boutique/${s.slug}`),

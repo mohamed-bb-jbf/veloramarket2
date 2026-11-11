@@ -6,6 +6,7 @@ import { getDict, type Locale } from "@/lib/i18n";
 import { price } from "@/lib/format";
 import { CheckIcon, ClockIcon } from "./icons";
 import { cleanPhone, PHONE_RE } from "./CheckoutForm";
+import { submit as send } from "@/lib/submit";
 
 const toMin = (hhmm: string) => {
   const [h, m] = hhmm.split(":").map(Number);
@@ -33,6 +34,9 @@ export default function BookingWidget({ salon, lang }: { salon: Salon; lang: Loc
   const [time, setTime] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sent, setSent] = useState(false);
+  const [demo, setDemo] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   // Dates calculées côté navigateur (fuseau horaire de la cliente).
   useEffect(() => {
@@ -54,7 +58,7 @@ export default function BookingWidget({ salon, lang }: { salon: Salon; lang: Loc
 
   if (sent)
     return (
-      <div className="bg-white rounded-2xl border border-line p-8 text-center space-y-3">
+      <div className="card p-8 text-center space-y-3">
         <span className="w-14 h-14 rounded-full bg-ok/10 text-ok grid place-items-center mx-auto">
           <CheckIcon className="w-7 h-7" />
         </span>
@@ -64,10 +68,11 @@ export default function BookingWidget({ salon, lang }: { salon: Salon; lang: Loc
           {service.name[lang]} ·{" "}
           {day?.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })} · {time}
         </p>
+        {demo && <p className="text-xs bg-rose-soft px-3 py-2">{t.demoSaved}</p>}
       </div>
     );
 
-  function submit(e: React.FormEvent<HTMLFormElement>) {
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
     const err: Record<string, string> = {};
@@ -76,25 +81,32 @@ export default function BookingWidget({ salon, lang }: { salon: Salon; lang: Loc
     if (!PHONE_RE.test(cleanPhone(f.phone || ""))) err.phone = t.phoneError;
     setErrors(err);
     if (Object.keys(err).length) return;
-    // Phase 4 : insertion dans la table bookings de Supabase.
-    try {
-      const prev = JSON.parse(localStorage.getItem("velora-bookings") || "[]");
-      localStorage.setItem(
-        "velora-bookings",
-        JSON.stringify([...prev, { salon: salon.slug, service: serviceId, day: day.toISOString(), time, ...f }]),
-      );
-    } catch {}
+    setBusy(true);
+    setFailed(false);
+    const res = await send("booking", {
+      ...f,
+      salon: salon.name,
+      salonSlug: salon.slug,
+      service: service.name.fr,
+      price: service.price,
+      minutes: service.minutes,
+      date: `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, "0")}-${String(day.getDate()).padStart(2, "0")}`,
+      time,
+    });
+    setBusy(false);
+    if (!res.ok) return setFailed(true);
+    setDemo(res.demo);
     setSent(true);
   }
 
   return (
-    <form onSubmit={submit} noValidate className="bg-white rounded-2xl border border-line p-5 space-y-6">
+    <form onSubmit={submit} noValidate className="card p-5 space-y-6">
       <fieldset className="space-y-2">
         <legend className="font-medium mb-2">{t.chooseService}</legend>
         {salon.services.map((s) => (
           <label
             key={s.id}
-            className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer ${s.id === serviceId ? "border-rose bg-rose-soft/30" : "border-line"}`}
+            className={`flex items-center gap-3 rounded-[3px] border p-3 cursor-pointer ${s.id === serviceId ? "border-rose bg-rose-soft/30" : "border-line"}`}
           >
             <input
               type="radio"
@@ -132,7 +144,7 @@ export default function BookingWidget({ salon, lang }: { salon: Salon; lang: Loc
                   setDayIdx(i);
                   setTime(null);
                 }}
-                className={`shrink-0 w-16 rounded-xl border py-2 text-center text-xs transition ${i === dayIdx ? "bg-plum text-cream border-plum" : "border-line hover:border-rose"} disabled:opacity-35 disabled:hover:border-line`}
+                className={`shrink-0 w-16 rounded-[3px] border py-2 text-center text-xs transition ${i === dayIdx ? "bg-ink text-cream border-ink" : "border-line hover:border-rose"} disabled:opacity-35 disabled:hover:border-line`}
               >
                 <span className="block capitalize">{d.toLocaleDateString(locale, { weekday: "short" })}</span>
                 <span className="block text-lg font-semibold num">{d.getDate()}</span>
@@ -178,8 +190,9 @@ export default function BookingWidget({ salon, lang }: { salon: Salon; lang: Loc
         </label>
       </fieldset>
 
-      <button className="btn btn-rose w-full">
-        {t.confirmBooking}
+      {failed && <p className="text-xs text-rose-deep" role="alert">{t.sendError}</p>}
+      <button disabled={busy} className="btn btn-rose w-full disabled:opacity-60">
+        {busy ? t.sending : t.confirmBooking}
         {time && ` · ${time}`}
       </button>
     </form>

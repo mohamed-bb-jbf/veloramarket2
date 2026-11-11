@@ -26,7 +26,7 @@ export default async function SearchPage({
   const list = products.filter((p) => {
     const shop = getShop(p.shopId);
     const c = categories.find((x) => x.slug === p.category);
-    const hay = norm([p.name, p.brand, shop?.name, c?.name.fr, c?.name.ar, p.desc.fr, p.desc.ar].join(" "));
+    const hay = norm([p.name.fr, p.name.ar, p.brand, shop?.name, c?.name.fr, c?.name.ar, p.desc.fr, p.desc.ar].join(" "));
     return (!nq || hay.includes(nq)) && (!w || String(shop?.wilaya) === w) && (!cat || p.category === cat);
   });
 
@@ -55,11 +55,11 @@ export default async function SearchPage({
         {list.length} {t.results}
       </p>
       {list.length ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
           {list.map((p) => <ProductCard key={p.id} p={p} lang={lang} />)}
         </div>
       ) : (
-        <p className="bg-white rounded-2xl border border-line p-8 text-center text-muted">{t.noResults}</p>
+        <p className="card p-8 text-center text-muted">{t.noResults}</p>
       )}
     </div>
   );
